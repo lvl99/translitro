@@ -1,0 +1,40 @@
+{
+  "name": "translitro",
+  "version": "0.1.0",
+  "description": "Normalise and transform special characters and non-latin characters (including Chinese and Japanese) to basic latin characters",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matt Scheurich <matt@lvl99.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "kuroshiro": "^1.1.2",
+    "kuroshiro-analyzer-kuromoji": "^1.1.0",
+    "pinyin": "^2.9.1",
+    "transliteration": "^2.1.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-typescript": "^7.10.1",
+    "@rollup/plugin-babel": "^5.0.3",
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "@types/jest": "^26.0.0",
+    "@types/lodash": "^4.14.155",
+    "@typescript-eslint/eslint-plugin": "^3.2.0",
+    "@typescript-eslint/parser": "^3.2.0",
+    "babel-jest": "^26.0.1",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "jest": "^26.0.1",
+    "jest-cli": "^26.0.1",
+    "prettier": "^2.0.5",
+    "rollup": "^2.15.0",
+    "rollup-plugin-terser": "^6.1.0",
+    "ts-jest": "^26.1.0",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.5"
+  }
+}

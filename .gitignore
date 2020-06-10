@@ -1,0 +1,14 @@
+!.gitignore
+
+.vscode
+.idea
+.rpt2_cache
+
+.DS_Store
+Thumbs.db
+
+node_modules
+*.logs
+logs
+
+coverage
