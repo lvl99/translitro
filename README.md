@@ -124,7 +124,7 @@ translitro(["良い一日", "こんにちは", "こうし" /*, "フョ" */], {
 // ["よいいちにち", "こんにちは", "こうし" /*, "ふょ" */]
 ```
 
-> Note: there's an [outstanding issue](https://github.com/hexenq/kuroshiro/issues/64) on kuroshiro where in some cases it can't convert hiragana to katakana.
+> Note: there's an [outstanding issue](https://github.com/hexenq/kuroshiro/issues/64) on kuroshiro where in some cases it can't convert katakana to hiragana.
 
 ```js
 translitro(["良い一日", "こんにちは", "こうし", "フョ"], {
