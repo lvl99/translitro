@@ -117,11 +117,11 @@ translitro(["良い一日", "こんにちは", "こうし", "フョ"], {
 It's also possible to transliterate Japanese to hiragana and katakana:
 
 ```js
-translitro(["良い一日", "こんにちは", "こうし"/*, "フョ"], {
+translitro(["良い一日", "こんにちは", "こうし" /*, "フョ" */], {
   from: "ja",
   to: "hiragana",
 }).then((o) => console.log(o));
-// ["よいいちにち", "こんにちは", "こうし"/*, "" */]
+// ["よいいちにち", "こんにちは", "こうし" /*, "ふょ" */]
 ```
 
 > Note: there's an [outstanding issue](https://github.com/hexenq/kuroshiro/issues/64) on kuroshiro where in some cases it can't convert hiragana to katakana.
