@@ -19,7 +19,8 @@
     "kuroshiro": "^1.1.2",
     "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "pinyin": "^2.9.1",
-    "transliteration": "^2.1.11"
+    "transliteration": "^2.1.11",
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.0",
@@ -34,7 +35,6 @@
     "jest-cli": "^26.0.1",
     "prettier": "^2.0.5",
     "ts-jest": "^26.1.0",
-    "tslib": "^2.0.0",
     "typescript": "^3.9.5"
   }
 }
