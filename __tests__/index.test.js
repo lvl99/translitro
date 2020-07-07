@@ -69,5 +69,50 @@ describe("translitro", () => {
     );
     const output8 = ["ヨイイチニチ", "コンニチハ", "コウシ", "フョ"];
     expect(input8).toEqual(expect.arrayContaining(output8));
+
+    const input9 = await translitro(
+      {
+        specialCharacters: "åéîøü",
+        arabic: "مرحبا",
+        greek: "γεια σας",
+        korean: "여보세요",
+      },
+      {
+        postProcess: ["upper"],
+      }
+    );
+    const output9 = {
+      specialCharacters: "AEIOU",
+      arabic: "MRHB",
+      greek: "GEIA SAS",
+      korean: "YEOBOSEYO",
+    };
+    expect(input9).toMatchObject(output9);
+
+    const input10 = await translitro(
+      {
+        specialCharacters: "åéîøü",
+        arabic: "مرحبا",
+        greek: "γεια σας",
+        korean: "여보세요",
+      },
+      {
+        postProcess: [
+          "upper",
+          (i) =>
+            i
+              .split(/\s+/g)
+              .map((o) => o[0])
+              .join(" "),
+        ],
+      }
+    );
+    const output10 = {
+      specialCharacters: "A",
+      arabic: "M",
+      greek: "G S",
+      korean: "Y",
+    };
+    expect(input10).toMatchObject(output10);
   });
 });

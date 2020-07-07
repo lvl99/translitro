@@ -1,6 +1,6 @@
 {
   "name": "translitro",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Normalise and transform special characters and non-latin characters (including Chinese and Japanese) to basic latin characters",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -16,6 +16,7 @@
   "author": "Matt Scheurich <matt@lvl99.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "change-case": "^4.1.1",
     "kuroshiro": "^1.1.2",
     "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "pinyin": "^2.9.1",

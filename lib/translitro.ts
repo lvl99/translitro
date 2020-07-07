@@ -2,6 +2,7 @@ import { transliterate } from "transliteration";
 import pinyin from "pinyin";
 import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
+import { capitalCase } from "change-case";
 import { get, applyFnTo, asyncApplyFnTo } from "./utils";
 
 export type TranslitroSubject =
@@ -9,12 +10,30 @@ export type TranslitroSubject =
   | TranslitroSubjectObject
   | TranslitroSubject[];
 
+export type TranslitroPostProcessPreset =
+  | "normal"
+  | "normalise"
+  | "normalize"
+  | "lower"
+  | "lowercase"
+  | "upper"
+  | "uppercase"
+  | "title"
+  | "titlecase"
+  | "capital"
+  | "capitalcase";
+export type TranslitroPostProcessFunction = (input: string) => string;
+export type TranslitroPostProcess =
+  | TranslitroPostProcessPreset
+  | TranslitroPostProcessFunction;
+
 export interface TranslitroSubjectObject {
   [name: string]: TranslitroSubject;
 }
 
 export interface TranslitroOptionsObject {
   from?: string;
+  postProcess?: TranslitroPostProcess | TranslitroPostProcess[];
 }
 
 export interface TranslitroChineseOptions
@@ -64,13 +83,49 @@ const core: {
   analyzer: {} as KuromojiAnalyzer,
 };
 
+/**
+ * Supported post processes
+ */
+const getPostProcess = (
+  name: string
+): TranslitroPostProcessFunction | undefined => {
+  switch (name) {
+    case "normal":
+    case "normalize":
+    case "normalise":
+      return (input: string) => transliterate(input);
+
+    case "upper":
+    case "uppercase":
+      return (input: string) => input.toUpperCase();
+
+    case "lower":
+    case "lowercase":
+      return (input: string) => input.toLowerCase();
+
+    case "title":
+    case "titlecase":
+    case "capital":
+    case "capitalcase":
+      return (input: string) => capitalCase(input);
+  }
+};
+
 const translitro = async (
   input: TranslitroSubject,
   options?: TranslitroOptions
 ): Promise<TranslitroSubject> => {
-  const { from, to, mode = "spaced", romajiSystem = "passport" } = {
+  const {
+    from,
+    to,
+    mode = "spaced",
+    romajiSystem = "passport",
+    postProcess = [],
+  } = {
     ...options,
   };
+
+  let output = input;
 
   switch (from) {
     case "zh":
@@ -89,7 +144,8 @@ const translitro = async (
           .join(" ")
           .trim();
 
-      return Promise.resolve(applyFnTo(input, zhTransliterate));
+      output = applyFnTo(input, zhTransliterate);
+      break;
 
     case "ja":
       // Initialise Kuroshiro if not already done
@@ -120,11 +176,30 @@ const translitro = async (
       const jaTransliterate = async (i: string): Promise<string> =>
         await core.kuroshiro.convert(i, convertOptions);
 
-      return asyncApplyFnTo(input, jaTransliterate);
+      output = await asyncApplyFnTo(input, jaTransliterate);
+      break;
 
     default:
-      return Promise.resolve(applyFnTo(input, transliterate));
+      output = applyFnTo(input, transliterate);
+      break;
   }
+
+  //  Run any post processes
+  const postProcesses = (postProcess instanceof Array
+    ? postProcess
+    : [postProcess]
+  )
+    .map((p) => (typeof p === "string" ? getPostProcess(p) : p))
+    .filter((p) => p instanceof Function);
+  if (postProcesses.length) {
+    postProcesses.forEach((p) => {
+      if (p) {
+        output = applyFnTo(output, p);
+      }
+    });
+  }
+
+  return Promise.resolve(output);
 };
 
 export default translitro;

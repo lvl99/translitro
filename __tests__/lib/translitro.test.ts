@@ -114,4 +114,39 @@ describe("translitro", () => {
     const result = await translitro(input, { from: "ja", to: "katakana" });
     expect(result).toEqual(expect.arrayContaining(output));
   });
+
+  it("should run post-processes", async () => {
+    const input1 = "こうし";
+    const output1 = "ko shi";
+    const result1 = await translitro(input1, {
+      from: "ja",
+      to: "romaji",
+      romajiSystem: "passport",
+      postProcess: "normalise",
+    });
+    expect(result1).toBe(output1);
+
+    const input2 = "こうし";
+    const output2 = "K";
+    const result2 = await translitro(input2, {
+      from: "ja",
+      to: "romaji",
+      romajiSystem: "passport",
+      postProcess: [
+        "normal",
+        "normalise",
+        "normalize",
+        "upper",
+        "uppercase",
+        "lower",
+        "lowercase",
+        "title",
+        "titlecase",
+        "capital",
+        "capitalcase",
+        (i) => i[0],
+      ],
+    });
+    expect(result2).toBe(output2);
+  });
 });

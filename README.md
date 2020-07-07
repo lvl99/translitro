@@ -78,6 +78,76 @@ translitro({
 */
 ```
 
+### Post-processing
+
+After transliterating your input, you can apply some post-processes:
+
+```js
+// Object
+translitro(
+  {
+    specialCharacters: "åéîøü",
+    arabic: "مرحبا",
+    greek: "γεια σας",
+    korean: "여보세요",
+  },
+  {
+    postProcess: ["upper"],
+  }
+).then((o) => console.log(o));
+
+/*
+  {
+    specialCharacters: "AEIOU",
+    arabic: "MRHB",
+    greek: "GEIA SAS",
+    korean: "YEOBOSEYO"
+  }
+*/
+```
+
+You can also specify multiple post-processes, including custom functions which take a single string input and return a string:
+
+```js
+// Object
+translitro(
+  {
+    specialCharacters: "åéîøü",
+    arabic: "مرحبا",
+    greek: "γεια σας",
+    korean: "여보세요",
+  },
+  {
+    postProcess: [
+      "upper",
+      (i) =>
+        i
+          .split(/\s+/g)
+          .map((o) => o[0])
+          .join(" "),
+    ],
+  }
+).then((o) => console.log(o));
+
+/*
+  {
+    specialCharacters: "A",
+    arabic: "M",
+    greek: "G S",
+    korean: "Y"
+  }
+*/
+```
+
+Current supported post-processes are:
+
+- `normal` (aka `normalize`, `normalise`): converts any special characters to basic latin versions
+- `upper` (aka `uppercase`): does what it says
+- `lower` (aka `lowercase`): does what it says
+- `title` (aka `titlecase`, `capital`, `capitalcase`): does what it says
+
+> Note: post-processes are performed in the order that they are declared.
+
 ### Transliterate Chinese and Japanese
 
 When transliterating Chinese and/or Japanese you will have to do those values separately due to needing to specify the input `from` parameter:
