@@ -53,7 +53,7 @@ declare module "kuroshiro" {
     _analyzer: null | Analyzer;
     Util: Util;
     init(analyzer: Analyzer): Promise<void>;
-    convert(str: string, options?: ConvertOptions): string;
+    convert(str: string, options?: ConvertOptions): Promise<string>;
   }
 
   export = Kuroshiro;

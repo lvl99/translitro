@@ -4,6 +4,7 @@ import Kuroshiro from "kuroshiro";
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 import { capitalCase } from "change-case";
 import { get, applyFnTo, asyncApplyFnTo } from "./utils";
+import XRegExp from "xregexp";
 
 export type TranslitroSubject =
   | string
@@ -83,6 +84,9 @@ const core: {
   analyzer: {} as KuromojiAnalyzer,
 };
 
+const RE_HAS_BLANKSPACE = /\s/;
+const RE_SEGMENTS = XRegExp("(\\s+|[\\d\\pL]+|[^\\s\\d\\pL]+)", "g");
+
 /**
  * Supported post processes
  */
@@ -161,10 +165,34 @@ const translitro = async (
         to: to || "romaji",
       };
 
+      let jaTransliterate = async (i: string): Promise<string> =>
+        await core.kuroshiro.convert(i, convertOptions);
+
       switch (convertOptions.to) {
         case "romaji":
           convertOptions.mode = mode || "spaced";
           convertOptions.romajiSystem = romajiSystem || "passport";
+
+          if (convertOptions.mode === "spaced") {
+            jaTransliterate = async (i: string): Promise<string> => {
+              // kuroshiro has a tendency to add extra blankspace when spaces exist and `mode: spaced`
+              if (RE_HAS_BLANKSPACE.test(i)) {
+                const segments = i.match(RE_SEGMENTS);
+                const processSegment = (j: string): Promise<string> =>
+                  RE_HAS_BLANKSPACE.test(j)
+                    ? Promise.resolve(j)
+                    : core.kuroshiro.convert(j, convertOptions);
+                const processedSegments = await asyncApplyFnTo(
+                  segments,
+                  processSegment
+                );
+                return processedSegments.join("");
+              } else {
+                // If no blankspace detected, process like normal
+                return await core.kuroshiro.convert(i, convertOptions);
+              }
+            };
+          }
           break;
 
         case "hiragana":
@@ -172,9 +200,6 @@ const translitro = async (
           convertOptions.mode = "normal";
           break;
       }
-
-      const jaTransliterate = async (i: string): Promise<string> =>
-        await core.kuroshiro.convert(i, convertOptions);
 
       output = await asyncApplyFnTo(input, jaTransliterate);
       break;

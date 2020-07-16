@@ -115,6 +115,17 @@ describe("translitro", () => {
     expect(result).toEqual(expect.arrayContaining(output));
   });
 
+  it("should keep blankspace and not add more (mitigates kuroshiro's `mode: spaced` option which adds more spacing when some spacing already exists)", async () => {
+    const input = "IZA 1-3-19西区新町 Osaka Osaka 550-0013 Japan";
+    const output = "IZA 1-3-19 nishi ku shimmachi Osaka Osaka 550-0013 Japan";
+    const result = await translitro(input, {
+      from: "ja",
+      to: "romaji",
+      mode: "spaced",
+    });
+    expect(result).toEqual(output);
+  });
+
   it("should run post-processes", async () => {
     const input1 = "こうし";
     const output1 = "ko shi";
