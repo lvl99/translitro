@@ -21,7 +21,7 @@ var core = {
     kuroshiro: {},
     analyzer: {},
 };
-var RE_HAS_BLANKSPACE = /\s/;
+var RE_SEGMENT_MARKERS = xregexp_1.default("(\\s|[^\\s\\d\\pL])");
 var RE_SEGMENTS = xregexp_1.default("(\\s+|[\\d\\pL]+|[^\\s\\d\\pL]+)", "g");
 /**
  * Supported post processes
@@ -105,10 +105,10 @@ var translitro = function (input, options) { return tslib_1.__awaiter(void 0, vo
                                 return tslib_1.__generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
-                                            if (!RE_HAS_BLANKSPACE.test(i)) return [3 /*break*/, 2];
+                                            if (!RE_SEGMENT_MARKERS.test(i)) return [3 /*break*/, 2];
                                             segments = i.match(RE_SEGMENTS);
                                             processSegment = function (j) {
-                                                return RE_HAS_BLANKSPACE.test(j)
+                                                return RE_SEGMENT_MARKERS.test(j)
                                                     ? Promise.resolve(j)
                                                     : core.kuroshiro.convert(j, convertOptions_1);
                                             };
