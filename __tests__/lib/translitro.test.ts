@@ -126,6 +126,17 @@ describe("translitro", () => {
     expect(result).toEqual(output);
   });
 
+  it("should treat punctuation same as blankspace without extra spaces when `mode: spaced`", async () => {
+    const input = "1-3-19西区新町";
+    const output = "1-3-19 nishi ku shimmachi";
+    const result = await translitro(input, {
+      from: "ja",
+      to: "romaji",
+      mode: "spaced",
+    });
+    expect(result).toEqual(output);
+  });
+
   it("should run post-processes", async () => {
     const input1 = "こうし";
     const output1 = "ko shi";

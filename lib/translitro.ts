@@ -84,7 +84,7 @@ const core: {
   analyzer: {} as KuromojiAnalyzer,
 };
 
-const RE_HAS_BLANKSPACE = /\s/;
+const RE_SEGMENT_MARKERS = XRegExp("(\\s|[^\\s\\d\\pL])");
 const RE_SEGMENTS = XRegExp("(\\s+|[\\d\\pL]+|[^\\s\\d\\pL]+)", "g");
 
 /**
@@ -176,10 +176,10 @@ const translitro = async (
           if (convertOptions.mode === "spaced") {
             jaTransliterate = async (i: string): Promise<string> => {
               // kuroshiro has a tendency to add extra blankspace when spaces exist and `mode: spaced`
-              if (RE_HAS_BLANKSPACE.test(i)) {
+              if (RE_SEGMENT_MARKERS.test(i)) {
                 const segments = i.match(RE_SEGMENTS);
                 const processSegment = (j: string): Promise<string> =>
-                  RE_HAS_BLANKSPACE.test(j)
+                  RE_SEGMENT_MARKERS.test(j)
                     ? Promise.resolve(j)
                     : core.kuroshiro.convert(j, convertOptions);
                 const processedSegments = await asyncApplyFnTo(
