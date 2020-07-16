@@ -7,6 +7,7 @@ var kuroshiro_1 = tslib_1.__importDefault(require("kuroshiro"));
 var kuroshiro_analyzer_kuromoji_1 = tslib_1.__importDefault(require("kuroshiro-analyzer-kuromoji"));
 var change_case_1 = require("change-case");
 var utils_1 = require("./utils");
+var xregexp_1 = tslib_1.__importDefault(require("xregexp"));
 var PinyinStyle = {
     normal: pinyin_1.default.STYLE_NORMAL,
     tone: pinyin_1.default.STYLE_TONE,
@@ -20,6 +21,8 @@ var core = {
     kuroshiro: {},
     analyzer: {},
 };
+var RE_HAS_BLANKSPACE = /\s/;
+var RE_SEGMENTS = xregexp_1.default("(\\s+|[\\d\\pL]+|[^\\s\\d\\pL]+)", "g");
 /**
  * Supported post processes
  */
@@ -86,22 +89,47 @@ var translitro = function (input, options) { return tslib_1.__awaiter(void 0, vo
                 convertOptions_1 = {
                     to: to || "romaji",
                 };
-                switch (convertOptions_1.to) {
-                    case "romaji":
-                        convertOptions_1.mode = mode || "spaced";
-                        convertOptions_1.romajiSystem = romajiSystem || "passport";
-                        break;
-                    case "hiragana":
-                    case "katakana":
-                        convertOptions_1.mode = "normal";
-                        break;
-                }
                 jaTransliterate = function (i) { return tslib_1.__awaiter(void 0, void 0, void 0, function () { return tslib_1.__generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, core.kuroshiro.convert(i, convertOptions_1)];
                         case 1: return [2 /*return*/, _a.sent()];
                     }
                 }); }); };
+                switch (convertOptions_1.to) {
+                    case "romaji":
+                        convertOptions_1.mode = mode || "spaced";
+                        convertOptions_1.romajiSystem = romajiSystem || "passport";
+                        if (convertOptions_1.mode === "spaced") {
+                            jaTransliterate = function (i) { return tslib_1.__awaiter(void 0, void 0, void 0, function () {
+                                var segments, processSegment, processedSegments;
+                                return tslib_1.__generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            if (!RE_HAS_BLANKSPACE.test(i)) return [3 /*break*/, 2];
+                                            segments = i.match(RE_SEGMENTS);
+                                            processSegment = function (j) {
+                                                return RE_HAS_BLANKSPACE.test(j)
+                                                    ? Promise.resolve(j)
+                                                    : core.kuroshiro.convert(j, convertOptions_1);
+                                            };
+                                            return [4 /*yield*/, utils_1.asyncApplyFnTo(segments, processSegment)];
+                                        case 1:
+                                            processedSegments = _a.sent();
+                                            return [2 /*return*/, processedSegments.join("")];
+                                        case 2: return [4 /*yield*/, core.kuroshiro.convert(i, convertOptions_1)];
+                                        case 3: 
+                                        // If no blankspace detected, process like normal
+                                        return [2 /*return*/, _a.sent()];
+                                    }
+                                });
+                            }); };
+                        }
+                        break;
+                    case "hiragana":
+                    case "katakana":
+                        convertOptions_1.mode = "normal";
+                        break;
+                }
                 return [4 /*yield*/, utils_1.asyncApplyFnTo(input, jaTransliterate)];
             case 5:
                 output = _g.sent();
